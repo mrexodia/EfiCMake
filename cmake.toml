@@ -1,0 +1,39 @@
+# Reference: https://build-cpp.github.io/cmkr/cmake-toml
+[project]
+name = "EfiCMake"
+cmake-before = """
+set(CMAKE_CONFIGURATION_TYPES "Release" CACHE STRING "")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/DEBUG:FULL /INCREMENTAL:NO" CACHE STRING "")
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "/DEBUG:FULL /INCREMENTAL:NO" CACHE STRING "")
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
+"""
+cmake-after = """
+set(CMAKE_EXECUTABLE_SUFFIX ".efi")
+"""
+
+[fetch-content.edk2]
+url = "https://github.com/tianocore/edk2/archive/refs/tags/edk2-stable202205.tar.gz"
+sha256 = "E6CF93BAE78B30A10732B8AFB5CC438735DC9EC976AE65D12DAB041C18BB7987"
+
+# Hacky thing just for the bootkit
+[target.edk2_headers]
+alias = "edk2::headers"
+type = "interface"
+include-directories = [
+    "${edk2_SOURCE_DIR}/MdePkg/Include",
+    "${edk2_SOURCE_DIR}/MdePkg/Include/X64",
+]
+msvc.link-options = [
+    "/NODEFAULTLIB",
+    "/ENTRY:EfiEntry",
+    "/SUBSYSTEM:EFI_APPLICATION",
+    "/MANIFESTUAC:NO",
+    "/DYNAMICBASE:NO",
+    "/NXCOMPAT:NO",
+]
+compile-features = ["cxx_std_17"]
+
+[target.EfiCMake]
+type = "executable"
+sources = ["src/EfiCMake/*.cpp", "src/EfiCMake/*.hpp"]
+link-libraries = ["edk2::headers"]
