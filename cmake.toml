@@ -36,5 +36,6 @@ compile-features = ["cxx_std_17"]
 
 [target.EfiCMake]
 type = "executable"
-sources = ["src/EfiCMake/*.cpp", "src/EfiCMake/*.hpp"]
+sources = ["src/EfiCMake/*.cpp", "src/EfiCMake/*.hpp",
+		   "src/EfiCMake/*.c", "src/EfiCMake/*.h"]
 link-libraries = ["edk2::headers"]
